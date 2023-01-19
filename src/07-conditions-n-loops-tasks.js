@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable no-param-reassign */
 /* *************************************************************************************************
  *                                                                                                *
@@ -231,8 +232,11 @@ function findFirstSingleChar(str) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  const start = isStartIncluded ? '[' : '(';
+  const end = isEndIncluded ? ']' : ')';
+  const interval = a > b ? `${b}, ${a}` : `${a}, ${b}`;
+  return `${start}${interval}${end}`;
 }
 
 
@@ -290,8 +294,21 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const cardNumberArray = Array.from(ccn.toString()).map((digit) => parseInt(digit));
+  for (let i = cardNumberArray.length - 2; i >= 0; i -= 2) {
+    cardNumberArray[i] *= 2;
+  }
+  for (let i = 0; i < cardNumberArray.length; i += 1) {
+    if (cardNumberArray[i] > 9) {
+      cardNumberArray[i] -= 9;
+    }
+  }
+  const sumDigits = cardNumberArray.reduce((acc, val) => acc + val);
+  if (sumDigits % 10 === 0) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -308,8 +325,18 @@ function isCreditCardNumber(/* ccn */) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  // eslint-disable-next-line no-shadow
+  function sumDigits(num) {
+    const arr = Array.from(num.toString()).map((digit) => parseInt(digit));
+    const sum = arr.reduce((acc, val) => acc + val);
+    return sum;
+  }
+  const sum = sumDigits(num);
+  if (sum > 9) {
+    return getDigitalRoot(sum);
+  }
+  return sum;
 }
 
 
@@ -334,8 +361,25 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const arr = [];
+  const brackets = {
+    '[': ']',
+    '(': ')',
+    '{': '}',
+    '<': '>',
+  };
+  for (let i = 0; i < str.length; i += 1) {
+    const char = str[i];
+    if (brackets[char]) {
+      arr.push(char);
+    } else if (char === ']' || char === ')' || char === '}' || char === '>') {
+      if (brackets[arr.pop()] !== char) {
+        return false;
+      }
+    }
+  }
+  return arr.length === 0;
 }
 
 
@@ -359,8 +403,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
@@ -376,8 +420,30 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  let commonDir = '';
+  let minLength = Number.MAX_VALUE;
+  for (let i = 0; i < pathes.length; i += 1) {
+    const dir = pathes[i].split('/');
+    minLength = Math.min(minLength, dir.length);
+    if (i === 0) {
+      commonDir = dir;
+    } else {
+      for (let j = 0; j < minLength; j += 1) {
+        if (commonDir[j] !== dir[j]) {
+          commonDir.splice(j);
+          minLength = j;
+          break;
+        }
+      }
+    }
+  }
+  if (commonDir.length === 1) {
+    return `/${commonDir.join('/')}`;
+  } if (commonDir.length === 0) {
+    return commonDir.join('/');
+  }
+  return `${commonDir.join('/')}/`;
 }
 
 
@@ -399,8 +465,21 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const m1NumRows = m1.length;
+  const m1NumCols = m1[0].length;
+  const m2NumCols = m2[0].length;
+  const newMatrix = new Array(m1NumRows);
+  for (let i = 0; i < m1NumRows; i += 1) {
+    newMatrix[i] = new Array(m2NumCols);
+    for (let j = 0; j < m2NumCols; j += 1) {
+      newMatrix[i][j] = 0;
+      for (let r = 0; r < m1NumCols; r += 1) {
+        newMatrix[i][j] += m1[i][r] * m2[r][j];
+      }
+    }
+  }
+  return newMatrix;
 }
 
 
